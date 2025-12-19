@@ -19,6 +19,7 @@ export default function RootLayout() {
         <Stack initialRouteName="(tabs)">
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           <Stack.Screen name="notification" options={{ headerShown: false }} />
+          <Stack.Screen name="focus" options={{ headerShown: false }} />
         </Stack>
         <StatusBar style="auto" />
       </ThemeProvider>

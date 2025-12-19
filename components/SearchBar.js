@@ -17,11 +17,11 @@ export default function SearchBar({ value, onChange, placeholder }) {
 
 const styles = StyleSheet.create({
   container: {
-    marginBottom: 16,
+    marginBottom: 18,
   },
   input: {
     backgroundColor: "#FFF",
-    padding: 10,
+    padding: 14,
     borderRadius: 12,
     fontSize: 14,
     color: "#333",

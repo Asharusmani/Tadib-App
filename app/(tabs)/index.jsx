@@ -8,6 +8,7 @@ import CustomCard from "../../components/customcard";
 import MyProgressBar from "../../components/ui/progressbar";
 import Streak from "../../components/ui/streak";
 import AddHabitModal from "../../components/AddHabitModal"; // ⬅️ Import karein
+import { Route } from "expo-router/build/Route";
 
 const habits = [
   { id: '1', title: 'Read Quran', progress: 50, icon: '📖', color: '#10B981' },
@@ -92,6 +93,7 @@ const IndexScreen = () => {
               icon="timer"
               color="#8B5CF6"
               image={require("../../assets/images/focus.png")}
+              onPress={() => router.push('/focus')}
             />
           </View>
           
