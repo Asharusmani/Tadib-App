@@ -128,51 +128,27 @@ export default function HabitScreen() {
           isSmallPhone && styles.statsRowSmall,
           isTablet && styles.statsRowTablet,
         ]}>
-          <View style={styles.statCard}>
-            <LinearGradient
-              colors={['#ECFDF5', '#D1FAE5']}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-              style={styles.statCardGradient}
-            >
-              <View style={styles.statIconContainer}>
-                <LinearGradient
-                  colors={['#10B981', '#059669']}
-                  style={styles.statIcon}
-                >
-                  <Ionicons name="checkmark-done-circle" size={20} color="#FFFFFF" />
-                </LinearGradient>
-              </View>
-              <Text style={styles.statValue}>{activeHabits}</Text>
-              <Text style={styles.statLabel}>Active Habits</Text>
-              <View style={styles.statBadge}>
-                <Text style={styles.statBadgeText}>In Progress</Text>
-              </View>
-            </LinearGradient>
-          </View>
+          <StatsCard
+            value={activeHabits}
+            label="Active Habits"
+            icon="checkmark-done-circle"
+            gradientColors={['#ECFDF5', '#D1FAE5']}
+            iconGradientColors={['#10B981', '#059669']}
+            badgeText="In Progress"
+            badgeColor="#D1FAE5"
+            badgeTextColor="#059669"
+          />
 
-          <View style={styles.statCard}>
-            <LinearGradient
-              colors={['#FEF3C7', '#FEF9C3']}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-              style={styles.statCardGradient}
-            >
-              <View style={styles.statIconContainer}>
-                <LinearGradient
-                  colors={['#F59E0B', '#D97706']}
-                  style={styles.statIcon}
-                >
-                  <Ionicons name="trophy" size={20} color="#FFFFFF" />
-                </LinearGradient>
-              </View>
-              <Text style={styles.statValue}>{totalProgress}%</Text>
-              <Text style={styles.statLabel}>Avg Progress</Text>
-              <View style={[styles.statBadge, { backgroundColor: '#FEF3C7' }]}>
-                <Text style={[styles.statBadgeText, { color: '#D97706' }]}>Overall</Text>
-              </View>
-            </LinearGradient>
-          </View>
+          <StatsCard
+            value={`${totalProgress}%`}
+            label="Avg Progress"
+            icon="trophy"
+            gradientColors={['#FEF3C7', '#FEF9C3']}
+            iconGradientColors={['#F59E0B', '#D97706']}
+            badgeText="Overall"
+            badgeColor="#FEF3C7"
+            badgeTextColor="#D97706"
+          />
         </View>
 
         {/* Premium Action Button with Animation */}
@@ -501,57 +477,6 @@ const styles = StyleSheet.create({
   statsRowTablet: {
     gap: 20,
     marginBottom: 32,
-  },
-  statCard: {
-    flex: 1,
-    borderRadius: 24,
-    overflow: 'hidden',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.1,
-    shadowRadius: 16,
-    elevation: 6,
-  },
-  statCardGradient: {
-    padding: 20,
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.5)',
-  },
-  statIconContainer: {
-    marginBottom: 12,
-  },
-  statIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 12,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  statValue: {
-    fontSize: 32,
-    fontWeight: '900',
-    color: '#0F172A',
-    letterSpacing: -1,
-    marginBottom: 4,
-  },
-  statLabel: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: '#64748B',
-    marginBottom: 8,
-  },
-  statBadge: {
-    alignSelf: 'flex-start',
-    backgroundColor: '#D1FAE5',
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 8,
-  },
-  statBadgeText: {
-    fontSize: 11,
-    fontWeight: '700',
-    color: '#059669',
-    letterSpacing: 0.3,
   },
   
   // Add Button

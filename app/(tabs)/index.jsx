@@ -109,6 +109,7 @@ const IndexScreen = () => {
               icon="stats-chart"
               color="#3B82F6"
               image={require("../../assets/images/analytics.png")}
+              onPress={() => router.push('/analytics')}
             />
           </View>
         </View>
