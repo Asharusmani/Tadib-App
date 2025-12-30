@@ -16,11 +16,18 @@ export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-        <Stack initialRouteName="(tabs)">
+        <Stack initialRouteName="login">
+          <Stack.Screen name="login" options={{ headerShown: false }} />
+          <Stack.Screen name="signup" options={{ headerShown: false }} />
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           <Stack.Screen name="notification" options={{ headerShown: false }} />
           <Stack.Screen name="focus" options={{ headerShown: false }} />
           <Stack.Screen name="analytics" options={{ headerShown: false }} />
+          
+          <Stack.Screen name="forgot" options={{ headerShown: false }} />
+          <Stack.Screen name="editprofile" options={{ headerShown: false }} />
+          <Stack.Screen name="groups" options={{ headerShown: false }} />
+
         </Stack>
         <StatusBar style="auto" />
       </ThemeProvider>

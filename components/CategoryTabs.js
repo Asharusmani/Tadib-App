@@ -22,7 +22,7 @@ export default function CategoryTabs({ activeCategory, onCategoryChange }) {
       >
         {categories.map((category) => {
           const isActive = activeCategory === category.id;
-          
+
           return (
             <TouchableOpacity
               key={category.id}
@@ -66,8 +66,8 @@ const styles = StyleSheet.create({
   },
   tabButton: {
     borderRadius: 16,
-    overflow: 'hidden',
-    shadowColor: '#000',
+
+    shadowColor: '#00000076',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
@@ -81,7 +81,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.2)',
+    borderRadius: 12
   },
+
   activeTabText: {
     fontSize: 14,
     fontWeight: '800',
@@ -96,7 +98,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     backgroundColor: '#F8FAFC',
     borderWidth: 1,
-    borderColor: '#E2E8F0',
+    borderColor: '#cbd0d6ff',
+    borderRadius: 12
   },
   inactiveTabText: {
     fontSize: 14,

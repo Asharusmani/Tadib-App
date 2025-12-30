@@ -1,15 +1,14 @@
+// ============================================
+// 4. ProfileScreen.jsx (Main Screen)
+// ============================================
 import * as ImagePicker from "expo-image-picker";
 import { useState } from "react";
 import { Alert, SafeAreaView, ScrollView, StyleSheet } from "react-native";
 
-// Components
-import Achievements from "../../components/Achievements";
-import ProfileHeader from "../../components/ProfileHeader";
-import YourStats from "../../components/YourStats";
-// Agar aap expo-router use kar rahe hain to ye asaan hai
+import Achievements from "../components/Achievements";
+import ProfileHeader from "../components/ProfileHeader";
+import YourStats from "../components/YourStats";
 import CustomHeader from "@/components/CustomHeader";
-
-
 
 const ProfileScreen = () => {
   const [profileImage, setProfileImage] = useState(null);
@@ -17,15 +16,15 @@ const ProfileScreen = () => {
   const handlePickImage = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== "granted") {
-      Alert.alert("Permission Denied", "Hame gallery access chahiye.");
+      Alert.alert("Permission Denied", "We need gallery access to change your profile picture.");
       return;
     }
 
     let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images, // Corrected to use direct property
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       aspect: [1, 1],
-      quality: 0.7,
+      quality: 0.8,
     });
 
     if (!result.canceled) {
@@ -35,12 +34,10 @@ const ProfileScreen = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* ✅ Header ko ScrollView se bahar rakha hai taake ye fixed rahe */}
       <CustomHeader
         title="Profile"
         showBack={false}
         showPlus={false}
-        onPlusPress={() => console.log("Add Pressed")}
       />
 
       <ScrollView
@@ -49,12 +46,11 @@ const ProfileScreen = () => {
       >
         <ProfileHeader
           name="Tadib"
-          email="Asharusmani@gmail.com"
+          email="Saadosama82@gmail.com"
           bio="Building better habits, one day at a time 🌟"
           joinedDate="January 2024"
           imageUri={profileImage}
           onPickImage={handlePickImage}
-          onEditPress={() => Alert.alert("Edit Profile Pressed")}
         />
 
         <YourStats />
@@ -67,12 +63,12 @@ const ProfileScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#FDFDFD",
+    backgroundColor: "#F9FAFB",
   },
   scrollContent: {
     paddingHorizontal: 20,
-    paddingBottom: 40, // Scroll ke end mein thori jagah ke liye
-    alignItems: "center",
+    paddingTop: 16,
+    paddingBottom: 60,
   },
 });
 

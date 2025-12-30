@@ -103,6 +103,7 @@ const IndexScreen = () => {
               icon="people"
               color="#F59E0B"
               image={require("../../assets/images/group.png")}
+              onPress={() => router.push('/groups')}
             />
             <CustomCard
               title="Analytics"
