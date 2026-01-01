@@ -12,28 +12,186 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  Alert,
+  ActivityIndicator,
 } from "react-native";
-
-// ✅ CustomButton import
 import CustomButton from "../components/CustomButton";
+import { authService } from "../services/authService";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
 const SignupScreen = () => {
   const [showPass, setShowPass] = useState(false);
   const [showConfirmPass, setShowConfirmPass] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  // ✅ Form state
+  const [formData, setFormData] = useState({
+    username: '',
+    phoneNumber: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+  });
+
+  // ✅ Update form field
+  const updateField = (field, value) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  // ✅ Validate form
+  const validateForm = () => {
+    const { username, phoneNumber, email, password, confirmPassword } = formData;
+
+    if (!username.trim()) {
+      Alert.alert('Error', 'Please enter username');
+      return false;
+    }
+
+    if (!phoneNumber.trim()) {
+      Alert.alert('Error', 'Please enter phone number');
+      return false;
+    }
+
+    if (!/^[0-9]{10,15}$/.test(phoneNumber.replace(/[\s-]/g, ''))) {
+      Alert.alert('Error', 'Please enter valid phone number');
+      return false;
+    }
+
+    if (!email.trim()) {
+      Alert.alert('Error', 'Please enter email');
+      return false;
+    }
+
+    if (!/\S+@\S+\.\S+/.test(email)) {
+      Alert.alert('Error', 'Please enter valid email address');
+      return false;
+    }
+
+    if (!password) {
+      Alert.alert('Error', 'Please enter password');
+      return false;
+    }
+
+    if (password.length < 6) {
+      Alert.alert('Error', 'Password must be at least 6 characters');
+      return false;
+    }
+
+    if (password !== confirmPassword) {
+      Alert.alert('Error', 'Passwords do not match');
+      return false;
+    }
+
+    return true;
+  };
+
+  // ✅ Handle signup
+  const handleSignup = async () => {
+    console.log('🟢 === SIGNUP FLOW START ===');
+
+    if (!validateForm()) {
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      console.log('1️⃣ Calling authService.register...');
+      console.log('   Email:', formData.email);
+      console.log('   Name:', formData.username);
+
+      const response = await authService.register({
+        name: formData.username,
+        email: formData.email.trim().toLowerCase(),
+        password: formData.password,
+      });
+
+      console.log('2️⃣ Register response:', response);
+
+      if (response.success) {
+        console.log('3️⃣ Registration successful!');
+        console.log('4️⃣ Navigating to home...');
+        
+        Alert.alert(
+          'Success',
+          'Account created successfully!',
+          [
+            {
+              text: 'OK',
+              onPress: () => {
+                router.replace("/(tabs)");
+              }
+            }
+          ]
+        );
+
+        console.log('🟢 === SIGNUP FLOW END (SUCCESS) ===');
+      } else {
+        console.log('⚠️ Registration failed:', response.error);
+        Alert.alert('Error', response.error || 'Registration failed');
+      }
+    } catch (error) {
+      console.error('❌ Signup error:', error);
+      console.log('🔴 === SIGNUP FLOW END (ERROR) ===');
+      
+      // ✅ Better error message handling
+      let errorMessage = 'Something went wrong. Please try again.';
+      
+      if (error.message) {
+        if (error.message.includes('already registered')) {
+          errorMessage = 'This email is already registered. Please use a different email or try logging in.';
+        } else if (error.message.includes('network')) {
+          errorMessage = 'Network error. Please check your internet connection.';
+        } else {
+          errorMessage = error.message;
+        }
+      }
+      
+      Alert.alert('Registration Failed', errorMessage);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const fields = [
-    "Username",
-    "Phone Number",
-    "Email",
-    "Password",
-    "Confirm Password",
+    { 
+      label: "Username", 
+      key: "username", 
+      placeholder: "Enter Username",
+      keyboardType: "default",
+      autoCapitalize: "words"
+    },
+    { 
+      label: "Phone Number", 
+      key: "phoneNumber", 
+      placeholder: "Enter Phone Number",
+      keyboardType: "phone-pad"
+    },
+    { 
+      label: "Email", 
+      key: "email", 
+      placeholder: "Enter Email",
+      keyboardType: "email-address",
+      autoCapitalize: "none"
+    },
+    { 
+      label: "Password", 
+      key: "password", 
+      placeholder: "Enter Password",
+      secureTextEntry: true
+    },
+    { 
+      label: "Confirm Password", 
+      key: "confirmPassword", 
+      placeholder: "Confirm Password",
+      secureTextEntry: true
+    },
   ];
 
   return (
     <View style={styles.container}>
-      {/* ✅ Gradient Header */}
+      {/* Header */}
       <LinearGradient
         colors={["#059669", "#10B981", "#34D399"]}
         start={{ x: 0, y: 0 }}
@@ -50,19 +208,20 @@ const SignupScreen = () => {
       <ScrollView
         showsVerticalScrollIndicator={false}
         style={{ marginTop: -60 }}
+        keyboardShouldPersistTaps="handled"
       >
         <View style={styles.card}>
-          {/* ✅ Tabs Section with Gradient */}
+          {/* Tabs */}
           <View style={styles.tabContainer}>
             <TouchableOpacity
               onPress={() => router.push("/login")}
               style={styles.inactiveTabWrapper}
+              disabled={loading}
             >
               <Text style={styles.inactiveTab}>Sign In</Text>
             </TouchableOpacity>
 
             <View style={styles.activeTabWrapper}>
-              {/* Sign Up Active Tab Background Gradient */}
               <LinearGradient
                 colors={["#059669", "#34D399"]}
                 start={{ x: 0, y: 0 }}
@@ -75,21 +234,27 @@ const SignupScreen = () => {
             </View>
           </View>
 
-          {fields.map((f, i) => {
-            const isPass = f === "Password";
-            const isConfirm = f === "Confirm Password";
+          {/* Form Fields */}
+          {fields.map((field, index) => {
+            const isPass = field.key === "password";
+            const isConfirm = field.key === "confirmPassword";
 
             return (
-              <View key={i} style={{ marginBottom: 15 }}>
-                <Text style={styles.label}>{f}</Text>
+              <View key={index} style={{ marginBottom: 15 }}>
+                <Text style={styles.label}>{field.label}</Text>
                 <View style={styles.inputWrapper}>
                   <TextInput
                     style={styles.input}
-                    placeholder={`Enter ${f}`}
+                    placeholder={field.placeholder}
                     placeholderTextColor="#999"
+                    value={formData[field.key]}
+                    onChangeText={(text) => updateField(field.key, text)}
+                    keyboardType={field.keyboardType || "default"}
+                    autoCapitalize={field.autoCapitalize || "none"}
                     secureTextEntry={
                       (isPass && !showPass) || (isConfirm && !showConfirmPass)
                     }
+                    editable={!loading}
                   />
 
                   {isPass || isConfirm ? (
@@ -100,6 +265,7 @@ const SignupScreen = () => {
                           : setShowConfirmPass(!showConfirmPass)
                       }
                       style={styles.iconContainer}
+                      disabled={loading}
                     >
                       <Ionicons
                         name={
@@ -119,11 +285,30 @@ const SignupScreen = () => {
             );
           })}
 
-          <CustomButton
-            title="Create Account"
-            onPress={() => router.replace("/(tabs)")}
-            iconName="person-add-outline"
-          />
+          {/* Create Account Button */}
+          {loading ? (
+            <View style={styles.loadingContainer}>
+              <ActivityIndicator size="large" color="#059669" />
+              <Text style={styles.loadingText}>Creating account...</Text>
+            </View>
+          ) : (
+            <CustomButton
+              title="Create Account"
+              onPress={handleSignup}
+              iconName="person-add-outline"
+            />
+          )}
+
+          {/* Already have account */}
+          <View style={styles.loginPrompt}>
+            <Text style={styles.loginPromptText}>Already have an account? </Text>
+            <TouchableOpacity 
+              onPress={() => router.push('/login')}
+              disabled={loading}
+            >
+              <Text style={styles.loginLink}>Sign In</Text>
+            </TouchableOpacity>
+          </View>
         </View>
 
         <View style={{ height: 50 }} />
@@ -236,6 +421,32 @@ const styles = StyleSheet.create({
     backgroundColor: "#00B368",
     opacity: 0.6,
     marginRight: 15,
+  },
+  loadingContainer: {
+    height: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginVertical: 10,
+  },
+  loadingText: {
+    marginTop: 8,
+    color: '#059669',
+    fontSize: 14,
+  },
+  loginPrompt: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  loginPromptText: {
+    color: '#666',
+    fontSize: 14,
+  },
+  loginLink: {
+    color: '#059669',
+    fontSize: 14,
+    fontWeight: '600',
   },
 });
 

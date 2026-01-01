@@ -1,17 +1,18 @@
-// ============================================
 // components/RangeInfoCard.jsx
-// ============================================
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 
-export default function RangeInfoCard({ startDate, endDate, daysCount, onCreateHabit }) {
+export default function RangeInfoCard({ startDate, endDate, daysCount, onCreateHabit, formatDate }) {
   if (!startDate) return null;
 
-  const formatDate = (dateKey) => {
-    if (!dateKey) return "";
-    const [year, month, day] = dateKey.split('-');
-    const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-    return `${parseInt(day)} ${monthNames[parseInt(month) - 1]} ${year}`;
+  const getDateDisplay = () => {
+    if (formatDate) {
+      const startText = formatDate(startDate);
+      const endText = endDate ? formatDate(endDate) : "(Select end date)";
+      return endDate ? `${startText} - ${endText}` : `${startText} ${endText}`;
+    }
+    // Fallback for old format
+    return `${startDate} ${endDate ? `- ${endDate}` : "(Select end date)"}`;
   };
 
   return (
@@ -27,9 +28,7 @@ export default function RangeInfoCard({ startDate, endDate, daysCount, onCreateH
         </View>
         <View style={styles.rangeInfo}>
           <Text style={styles.rangeLabel}>Selected Range</Text>
-          <Text style={styles.rangeText}>
-            {formatDate(startDate)} {endDate ? `- ${formatDate(endDate)}` : "(Select end date)"}
-          </Text>
+          <Text style={styles.rangeText}>{getDateDisplay()}</Text>
           <Text style={styles.rangeDays}>
             {daysCount} day{daysCount > 1 ? "s" : ""} selected
           </Text>
@@ -89,7 +88,7 @@ const styles = StyleSheet.create({
     marginBottom: 2,
   },
   rangeText: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: "bold",
     color: "#1e293b",
   },

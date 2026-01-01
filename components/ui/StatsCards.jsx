@@ -1,9 +1,9 @@
-// ============================================
-// components/StatsCards.jsx
-// ============================================
-import { View, Text, StyleSheet } from "react-native";
+// components/StatsCards.jsx - FIXED CONSISTENT LAYOUT
+import { View, Text, StyleSheet, Dimensions } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import Ionicons from "@expo/vector-icons/Ionicons";
+
+const { width: screenWidth } = Dimensions.get('window');
 
 export default function StatsCards({ daysCount, habitsCount }) {
   return (
@@ -44,11 +44,12 @@ export default function StatsCards({ daysCount, habitsCount }) {
 const styles = StyleSheet.create({
   statsContainer: {
     flexDirection: "row",
-    gap: 12,
+    justifyContent: "space-between",
     marginBottom: 20,
+    paddingHorizontal: 0,
   },
   statCard: {
-    flex: 1,
+    width: (screenWidth - 52) / 2, // (full width - padding - gap) / 2 cards
     borderRadius: 20,
     overflow: "hidden",
     elevation: 2,
@@ -58,8 +59,10 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
   },
   statGradient: {
-    padding: 16,
+    paddingVertical: 20,
+    paddingHorizontal: 16,
     alignItems: "center",
+    minHeight: 130, // Minimum height to keep consistent
   },
   statIcon: {
     width: 48,
@@ -71,14 +74,16 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   statValue: {
-    fontSize: 28,
+    fontSize: 32,
     fontWeight: "bold",
     color: "#1e293b",
     marginBottom: 4,
+    lineHeight: 36,
   },
   statLabel: {
-    fontSize: 12,
+    fontSize: 13,
     color: "#64748b",
     fontWeight: "600",
+    textAlign: "center",
   },
 });

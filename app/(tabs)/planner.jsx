@@ -1,8 +1,6 @@
-// ============================================
 // screens/ModernPlannerScreen.jsx
-// ============================================
 import { useState } from "react";
-import { SafeAreaView, ScrollView, StyleSheet, Alert } from "react-native";
+import { SafeAreaView, ScrollView, StyleSheet, Alert, Platform, StatusBar } from "react-native";
 import Header from "../../components/ui/Header";
 import RangeInfoCard from "../../components/ui/RangeInfoCard";
 import Calendar from "../../components/ui/Calendar";
@@ -44,6 +42,13 @@ export default function ModernPlannerScreen() {
     return diffDays + 1;
   };
 
+  const formatDateForDisplay = (dateKey) => {
+    if (!dateKey) return "";
+    const date = new Date(dateKey);
+    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    return `${date.getDate()} ${months[date.getMonth()]}`;
+  };
+
   const handleCreateHabit = () => {
     if (!startDate) {
       Alert.alert("Error", "Please select at least a start date!");
@@ -62,7 +67,12 @@ export default function ModernPlannerScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView style={styles.scrollContent}>
+      <StatusBar barStyle="dark-content" backgroundColor="#f8fafc" />
+      <ScrollView 
+        style={styles.scrollView}
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+      >
         <Header />
 
         <RangeInfoCard
@@ -70,6 +80,7 @@ export default function ModernPlannerScreen() {
           endDate={endDate}
           daysCount={getDaysCount()}
           onCreateHabit={handleCreateHabit}
+          formatDate={formatDateForDisplay}
         />
 
         <Calendar
@@ -90,6 +101,7 @@ export default function ModernPlannerScreen() {
         daysCount={getDaysCount()}
         onClose={() => setModalVisible(false)}
         onSave={handleSaveHabit}
+        formatDate={formatDateForDisplay}
       />
     </SafeAreaView>
   );
@@ -99,8 +111,14 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#f8fafc",
+    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
+  },
+  scrollView: {
+    flex: 1,
   },
   scrollContent: {
-    padding: 20,
+    paddingHorizontal: 20,
+    paddingTop: 16,
+    paddingBottom: 24,
   },
 });

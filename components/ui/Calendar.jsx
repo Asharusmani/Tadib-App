@@ -1,6 +1,4 @@
-// ============================================
-// components/Calendar.jsx
-// ============================================
+// components/Calendar.jsx - FIXED ALIGNMENT
 import { useState } from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
@@ -8,7 +6,7 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 
 const DAYS = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"];
 const MONTHS = [
-  "January", "February", "March", "April", "May", "June",
+  "January", " ", "March", "April", "May", "June",
   "July", "August", "September", "October", "November", "December"
 ];
 
@@ -81,6 +79,7 @@ export default function Calendar({ startDate, endDate, onDateClick }) {
 
   return (
     <View style={styles.calendarCard}>
+      {/* Month Navigation Header */}
       <View style={styles.monthNavigationContainer}>
         <TouchableOpacity 
           style={styles.navButton} 
@@ -112,19 +111,23 @@ export default function Calendar({ startDate, endDate, onDateClick }) {
         </TouchableOpacity>
       </View>
 
+      {/* Days Header */}
       <View style={styles.daysRow}>
         {DAYS.map((day) => (
-          <Text key={day} style={styles.dayLabel}>
-            {day}
-          </Text>
+          <View key={day} style={styles.dayCell}>
+            <Text style={styles.dayLabel}>{day}</Text>
+          </View>
         ))}
       </View>
 
+      {/* Dates Grid */}
       <View style={styles.datesGrid}>
+        {/* Empty cells for offset */}
         {Array.from({ length: firstDayOffset }).map((_, i) => (
-          <View key={`empty-${i}`} style={styles.dateContainer} />
+          <View key={`empty-${i}`} style={styles.dateCell} />
         ))}
         
+        {/* Date cells */}
         {DATES.map((date) => {
           const inRange = isInRange(date);
           const isEdge = isRangeEdge(date);
@@ -134,7 +137,7 @@ export default function Calendar({ startDate, endDate, onDateClick }) {
               key={date}
               onPress={() => handleDateClick(date)}
               activeOpacity={0.7}
-              style={styles.dateContainer}
+              style={styles.dateCell}
             >
               {isEdge ? (
                 <LinearGradient
@@ -207,25 +210,27 @@ const styles = StyleSheet.create({
   },
   daysRow: {
     flexDirection: "row",
-    justifyContent: "space-around",
-    marginBottom: 16,
+    marginBottom: 12,
+  },
+  dayCell: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 8,
   },
   dayLabel: {
     fontSize: 12,
     fontWeight: "600",
     color: "#64748b",
-    width: 40,
-    textAlign: "center",
   },
   datesGrid: {
     flexDirection: "row",
     flexWrap: "wrap",
-    gap: 8,
   },
-  dateContainer: {
-    width: "13%",
+  dateCell: {
+    width: '14.28%', // 100% / 7 days = exact width
     aspectRatio: 1,
-    marginBottom: 8,
+    padding: 2, // Small padding for spacing
   },
   dateCircle: {
     flex: 1,
@@ -242,6 +247,7 @@ const styles = StyleSheet.create({
     fontWeight: "500",
   },
   rangeDate: {
+    backgroundColor: "#d1fae5",
     borderWidth: 1,
     borderColor: "#10b981",
   },

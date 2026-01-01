@@ -10,19 +10,63 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  Alert,
+  ActivityIndicator,
 } from "react-native";
-
-// ✅ Custom Button Component
 import CustomButton from "../components/CustomButton";
+
+// ✅ Use AuthContext instead of direct authService
+import { useAuth } from "../context/AuthContext";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
 const LoginScreen = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  // ✅ Get login function from context
+  const { login } = useAuth();
+
+  const handleLogin = async () => {
+    // Validation
+    if (!email || !password) {
+      Alert.alert('Error', 'Please enter email and password');
+      return;
+    }
+
+    if (!/\S+@\S+\.\S+/.test(email)) {
+      Alert.alert('Error', 'Please enter a valid email');
+      return;
+    }
+
+    try {
+      setLoading(true);
+      
+      // ✅ Use context login function
+      const result = await login({
+        email: email.trim().toLowerCase(),
+        password: password
+      });
+
+      if (result.success) {
+        // ✅ Automatically navigate to home (handled by context)
+        router.replace("/(tabs)");
+      } else {
+        Alert.alert('Login Failed', result.error || 'Invalid credentials');
+      }
+    } catch (error) {
+      console.error('❌ Login error:', error);
+      Alert.alert('Error', error.message || 'Something went wrong');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <View style={styles.container}>
-      {/* 🔹 Gradient Header */}
+      {/* Header */}
       <LinearGradient
         colors={["#059669", "#10B981", "#34D399"]}
         start={{ x: 0, y: 0 }}
@@ -36,12 +80,11 @@ const LoginScreen = () => {
         />
       </LinearGradient>
 
-      {/* 🔹 Card */}
+      {/* Card */}
       <View style={styles.card}>
-        {/* 🔹 Tabs Section */}
+        {/* Tabs */}
         <View style={styles.tabContainer}>
           <View style={styles.activeTabWrapper}>
-            {/* ✅ "Sign In" Background Gradient Fixed */}
             <LinearGradient
               colors={["#059669", "#34D399"]}
               start={{ x: 0, y: 0 }}
@@ -50,7 +93,6 @@ const LoginScreen = () => {
             >
               <Text style={styles.signInText}>Sign In</Text>
             </LinearGradient>
-            {/* Underline */}
             <View style={styles.underline} />
           </View>
 
@@ -62,19 +104,23 @@ const LoginScreen = () => {
           </TouchableOpacity>
         </View>
 
-        {/* 🔹 Email Input */}
+        {/* Email Input */}
         <Text style={styles.label}>Email</Text>
         <View style={styles.inputWrapper}>
           <TextInput
             style={styles.input}
-            placeholder="Asharusmani@gmail.com"
+            placeholder="example@gmail.com"
             placeholderTextColor="#999"
             keyboardType="email-address"
+            autoCapitalize="none"
+            value={email}
+            onChangeText={setEmail}
+            editable={!loading}
           />
           <View style={styles.dotIcon} />
         </View>
 
-        {/* 🔹 Password Input */}
+        {/* Password Input */}
         <Text style={styles.label}>Password</Text>
         <View style={styles.inputWrapper}>
           <TextInput
@@ -82,10 +128,14 @@ const LoginScreen = () => {
             placeholder="••••••••"
             secureTextEntry={!showPassword}
             placeholderTextColor="#999"
+            value={password}
+            onChangeText={setPassword}
+            editable={!loading}
           />
           <TouchableOpacity
             onPress={() => setShowPassword(!showPassword)}
             style={styles.iconContainer}
+            disabled={loading}
           >
             <Ionicons
               name={showPassword ? "eye-outline" : "eye-off-outline"}
@@ -95,33 +145,47 @@ const LoginScreen = () => {
           </TouchableOpacity>
         </View>
 
-        {/* 🔹 Forgot Password */}
-        <TouchableOpacity onPress={() => router.push("/forgot")}>
+        {/* Forgot Password */}
+        <TouchableOpacity 
+          onPress={() => router.push("/forgot")}
+          disabled={loading}
+        >
           <Text style={styles.forgotText}>Forgot Password?</Text>
         </TouchableOpacity>
 
-        {/* 🔹 Sign In Button */}
-        <CustomButton
-          title="Sign Inn"
-          onPress={() => router.replace("/(tabs)")}
-          iconName="log-in-outline"
-        />
+        {/* Sign In Button */}
+        {loading ? (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color="#059669" />
+            <Text style={styles.loadingText}>Logging in...</Text>
+          </View>
+        ) : (
+          <CustomButton
+            title="Sign In"
+            onPress={handleLogin}
+            iconName="log-in-outline"
+          />
+        )}
 
-        {/* 🔹 Divider */}
+        {/* Divider */}
         <View style={styles.divider}>
           <View style={styles.line} />
           <Text style={styles.orText}>Or</Text>
           <View style={styles.line} />
         </View>
 
-        {/* 🔹 Social Buttons */}
+        {/* Social Buttons */}
         <TouchableOpacity
           style={[styles.socialBtn, { backgroundColor: "#f42727" }]}
+          disabled={loading}
         >
           <Text style={styles.socialBtnText}>Continue with Google</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={[styles.socialBtn, styles.fbMargin]}>
+        <TouchableOpacity 
+          style={[styles.socialBtn, styles.fbMargin]}
+          disabled={loading}
+        >
           <Text style={styles.socialBtnText}>Continue with Facebook</Text>
         </TouchableOpacity>
       </View>
@@ -210,6 +274,17 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: "600",
     marginBottom: 20,
+  },
+  loadingContainer: {
+    height: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginVertical: 10,
+  },
+  loadingText: {
+    marginTop: 8,
+    color: '#059669',
+    fontSize: 14,
   },
   divider: { flexDirection: "row", alignItems: "center", marginVertical: 15 },
   line: { flex: 1, height: 1, backgroundColor: "#EEE" },
